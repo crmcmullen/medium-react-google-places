@@ -1,0 +1,56 @@
+@import "./assets/css/global.scss";
+@import "./assets/css/forms.scss";
+
+.address-container {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    max-width: 22rem;
+}
+
+.form-field-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+.form-field {
+    margin-bottom: .25rem;
+}
+
+// used for putting two short fields on the same line
+.short-form-field-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.short-form-field {
+    margin-bottom: .25rem;
+    width: 10.5rem;
+    max-width: 10.5rem;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.button-primary {
+    @extend .form-submit-button;
+    margin-bottom: 1.5rem;
+    height: 2.5rem;
+    min-height: 2.5rem;
+    width: 12.5rem;
+    min-width: 12.5rem;
+
+    @media screen and (max-width: $phone-wide) {
+        width: 100%;
+        min-width: 100%;
+    }
+
+}

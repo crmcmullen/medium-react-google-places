@@ -1,0 +1,46 @@
+// Variables
+$page-height: 100vh;
+$page-width: 1200px;
+
+$page-screen-padding-x: 2rem;
+$page-phone-padding-x: 1.125rem;
+
+$tablet-wide: 880px;
+$phone-wide: 575px;
+
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+html {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    min-height: $page-height !important;
+    margin: 0;
+    padding: 0;
+}
+
+#root {
+    display: flex;
+    flex-direction: column;
+    min-height: $page-height;
+}
+
+.container {
+    max-width: $page-width;
+    margin: 0 auto; 
+    padding-left: $page-screen-padding-x;
+    padding-right: $page-screen-padding-x;
+    width: 100%;
+    max-width: $page-width;
+    
+    @media screen and (max-width: $phone-wide) {
+        padding-left: $page-phone-padding-x;
+        padding-right: $page-phone-padding-x;
+    }
+}
+
+.red-line {border: 1px solid red;}

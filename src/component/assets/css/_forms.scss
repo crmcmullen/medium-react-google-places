@@ -1,0 +1,64 @@
+// form variables
+$input-field-height: 2.25rem;
+$input-field-border-radius: .35rem;
+
+input {
+    border: 1px solid #0000001F;
+}
+
+input:not([type="checkbox"]),
+textarea,
+select {
+    border: 1px solid #0000001F;
+    border-radius: $input-field-border-radius;
+    font-size: 1rem;
+    height: $input-field-height;
+    outline: none;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: rgb(67, 67, 67);
+}
+
+label {
+    color: #575757;
+    display: block;
+    font-size: 0.75rem;
+    margin-left: .5rem;
+    margin-bottom: .25rem;
+}
+
+.validation-error {
+    color: rgb(194, 22, 22);
+    display: block;
+    font-size: 0.75rem;
+    margin-top: .25rem;
+    margin-left: .5rem;
+    margin-bottom: .25rem;
+}
+
+.form-submit-button {
+    background-color: rgb(0, 145, 255);
+    border: 0rem;
+    border-radius: $input-field-border-radius;
+    color: #FFFFFF;
+    font-weight: bold;
+    min-height: $input-field-height;
+    min-width: 6.25rem;
+    padding: .75rem;
+    text-transform: uppercase;
+
+    &:hover {
+        background-color: rgb(0, 75, 133);
+        cursor: pointer;
+    }
+    &:disabled {
+        background-color: rgb(0, 75, 133);
+        color: #ededed;
+        cursor: default;
+    }
+}
