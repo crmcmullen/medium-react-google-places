@@ -2,7 +2,7 @@
 
 A starter kit for implementing the Google Place Autocomplete widget into an address form built with React Hoooks.
 
-This code accompanies my Medium article entitled, "How to use Google Place Autocomplete Widget with React Hooks" located at: [url here]
+This code accompanies my Medium article entitled, "Implementing the Google Place Autocomplete Widget in React Hooks" located at: https://betterprogramming.pub/how-to-implement-the-google-place-autocomplete-widget-in-react-hooks-4394a7a4e3b0
 
 # License
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
