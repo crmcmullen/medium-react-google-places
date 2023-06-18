@@ -3,7 +3,7 @@ const useGooglePlaceAutoComplete = () => {
   const initAutoComplete = async (input, callback) => {
     let autoComplete = new window.google.maps.places.Autocomplete(input, {
       // limit to North America for now
-      componentRestrictions: { country: ["fr", "it"] },
+      componentRestrictions: { country: ["fr"] },
       fields: ["address_component", "geometry"],
       types: ["address"]
     } );
