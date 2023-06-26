@@ -10,7 +10,7 @@ const matchingCoordinates = (coordinates1, coordinates2) => (
 
 const markerCoordinates = marker => JSON.parse(JSON.stringify(marker.getPosition()));
 
-const Map = ({ center }) => {
+const Map = ({ center, setSurface }) => {
   const [ map, setMap ] = useState();
   const [ markers, setMarkers ] = useState([]);
 
@@ -64,10 +64,16 @@ const Map = ({ center }) => {
   useEffect (() => {
     if (!map)
       return ;
+
+    // const centerMarker = new window.google.maps.marker.PinView({
+    //   background: '#FBBC04',
+    // })
+
     // The marker, positioned at the center of the map
     /*const marker = */new window.google.maps.Marker({
       position: center,
       map,
+      // content: centerMarker.elementm
     });
     // setMarkers([ marker ]);
     map.addListener("click", handleClickPoints);
@@ -76,8 +82,11 @@ const Map = ({ center }) => {
   /* on points change, draw the markers, and calc surface if needed*/ 
   useEffect(() => {
     // console.log("useEffect calc surface if more than 2 markers");
-    if (markers.length > 2)
-      alert('Surface found : ' + window.google.maps.geometry?.spherical?.computeArea(markers.map(m => markerCoordinates(m))));
+    if (markers.length > 2) {
+      const surface = window.google.maps.geometry?.spherical?.computeArea(markers.map(m => markerCoordinates(m)));
+      // alert('Surface found : ' + surface);
+      setSurface(surface);
+    }
   }, [markers]);
 
   return (
