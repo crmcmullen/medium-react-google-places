@@ -54,6 +54,24 @@ function Home() {
                 A DEFINIR
               </StepContent>
             </Step>
+            <Step onClick={() => setActiveStep(3)}>
+              <StepLabel>Indiquer l'inclinaison</StepLabel>
+              <StepContent>
+                A DEFINIR
+              </StepContent>
+            </Step>
+            <Step onClick={() => setActiveStep(4)}>
+              <StepLabel>Retour météo</StepLabel>
+              <StepContent>
+                A DEFINIR
+              </StepContent>
+            </Step>
+            <Step onClick={() => setActiveStep(5)}>
+              <StepLabel>Résultat</StepLabel>
+              <StepContent>
+                A DEFINIR
+              </StepContent>
+            </Step>
           </Stepper>
         </Paper>
         <Paper>
