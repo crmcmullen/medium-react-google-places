@@ -6,7 +6,12 @@ import {
   Step,
   StepLabel,
   StepContent,
+  IconButton,
 } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+
+import { green, blue, red, orange } from '@mui/material/colors';
 
 import "./home.scss";
 
@@ -14,11 +19,24 @@ import Form from './Form';
 import Map from './Map';
 
 import { _MAP_CENTER_FR_ } from './config';
+const _COLORS_ = [ green, blue, red, orange ];
+
 
 function Home() {
-  const [ center, setCenter ] = useState(_MAP_CENTER_FR_);
-  const [ surface, setSurface ] = useState(0);
   const [ activeStep, setActiveStep ] = useState(0);
+  const [ center, setCenter ] = useState(_MAP_CENTER_FR_);
+  const [ pans, setPans ] = useState([
+    { color: _COLORS_[0], surface: 0 },
+  ]);
+  const [ activePan, setActivePan ] = useState(0);
+
+  const addPan = () => {
+    setPans([ ...pans, { color: _COLORS_.find(c => !pans.some(p => p.color === c)), surface: 0 } ]);
+  };
+
+  const deletePan = index => {
+    setPans(p => p.filter((item, i) => i !== index));
+  }
 
   const submitAddress = location => {
     setCenter(location);
@@ -43,9 +61,28 @@ function Home() {
             <Step>
               <StepLabel onClick={() => setActiveStep(1)}>Calculer les pans</StepLabel>
               <StepContent>
-                <div style={{ background: '#f2f2f2', padding: '1.5em', margin: '1em 0'}}>
-                  <h4>Surface : { surface ? surface.toLocaleString('fr-FR', { maximumFractionDigits: 2 }) : '--'} m2</h4>
-                </div>
+              { pans.map((pan, index) =>
+                <Paper style={{ background: '#f2f2f2', padding: '1.5em', margin: '1em 0'}} elevation={activePan === index ? 12 : 2} onClick={() => setActivePan(index)}>
+                  <Typography variant='h6' style={{ display: 'flex', justifyContent: 'space-between'}} component='div'>
+                    <div style={{ display: 'flex' }}>
+                      <div style={{ backgroundColor: pan.color[500], width: 30, height: 30 }}>{' '}</div>
+                      Pan { index + 1}
+                    </div>
+                    <div style={{ display: 'flex' }}>
+                      <IconButton onClick={() => deletePan(index)} disabled={pans.length === 1}>
+                        <DeleteIcon />
+                      </IconButton>
+                      <IconButton onClick={addPan} disabled={pans.length === 4}>
+                        <AddIcon />
+                      </IconButton>
+                    </div>
+                  </Typography>
+                  <Typography>
+                    Surface :
+                    { pan.surface ? pan.surface.toLocaleString('fr-FR', { maximumFractionDigits: 2 }) : '--'} m2
+                  </Typography>
+                </Paper>
+              ) }
               </StepContent>
             </Step>
             <Step onClick={() => setActiveStep(2)}>
@@ -75,7 +112,17 @@ function Home() {
           </Stepper>
         </Paper>
         <Paper>
-          <Map center={center} setSurface={setSurface} />
+          <Map
+            center={center}
+            setSurface={surface => setPans(ps =>
+              ps.map((pan, index) => 
+                index === activePan
+                ? ({ ...pan, surface })
+                : pan
+              )
+            )}
+            colorPan={pans[activePan].color}
+          />
         </Paper>
       </div>
     </div>
