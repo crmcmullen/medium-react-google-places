@@ -22,6 +22,7 @@ const Map = ({ center, setSurface }) => {
       const mapIni = new window.google.maps.Map(document.getElementById("map"), {
         zoom: isFranceCenter ? 6 : 20,
         center,
+        mapTypeId: "satellite"
       })
       // The map, centered from props
       setMap(mapIni);
