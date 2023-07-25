@@ -7,14 +7,13 @@ const matchingCoordinates = (coordinates1, coordinates2) => (
   coordinates1.lng.toString() === coordinates2.lng.toString()
 );
 
-
 const markerCoordinates = marker => JSON.parse(JSON.stringify(marker.getPosition()));
 
-const Map = ({ center, setSurface }) => {
+const Map = ({ center, colorMarkers, setSurface }) => {
   const [ map, setMap ] = useState();
   const [ markers, setMarkers ] = useState([]);
 
-  /* 1st, (re)load map when center changes */
+  /* 1st, (re)load map when center changes, zoom out if no search otherwise zoomed in */
   useEffect(() => {
     async function loadGoogleMaps() {
       const isFranceCenter = matchingCoordinates(center, _MAP_CENTER_FR_);
@@ -37,12 +36,18 @@ const Map = ({ center, setSurface }) => {
     // markersIni.forEach((marker, index) => 
     //   console.log("Looping over marker[", index ,"] position=", markerCoordinates(marker))
     // );
+    // const pinWithColor = new window.google.maps.marker.PinView({
+    //   background: colorMarkers,
+    // });
+
 
     //If not already in array
     if(!markersIni.some(marker => matchingCoordinates(markerCoordinates(marker), latLng))) {
       const newMarker = new window.google.maps.Marker({
+      // const newMarker = new window.google.maps.marker.AdvancedMarkerView({
         position: latLng,
         map,
+        // content: pinWithColor.element,
       });
       newMarker.addListener("click", handleClickPoints)
       console.log("Adding marker : ", markerCoordinates(newMarker));
