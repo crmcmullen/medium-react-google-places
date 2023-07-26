@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 
 import { _MAP_CENTER_FR_ } from './config';
 
@@ -9,19 +9,61 @@ const matchingCoordinates = (coordinates1, coordinates2) => (
 
 const markerCoordinates = marker => JSON.parse(JSON.stringify(marker.getPosition()));
 
-const Map = ({ center, colorMarkers, setSurface }) => {
+const _POLYGON_DATA_ = {
+  //paths: [new window.google.maps.Marker(center)],
+  strokeOpacity: 0.8,
+  strokeWeight: 2,
+  fillOpacity: 0.35,
+  editable: false,
+  // strokeColor: "#FF0000",
+  // fillColor: "#FF0000",
+};
+
+const Map = ({ center, activePan = 0, pans = [], setSurface }) => {
+
   const [ map, setMap ] = useState();
   const [ markers, setMarkers ] = useState([]);
   
-  const [ polygon, setPolygon ] = useState(new window.google.maps.Polygon({
-    //paths: [new window.google.maps.Marker(center)],
-    strokeColor: "#FF0000",
-    strokeOpacity: 0.8,
-    strokeWeight: 2,
-    fillColor: "#FF0000",
-    fillOpacity: 0.35,
-    editable: true,
-  }));
+  const colorPan = useMemo(() => pans[activePan].color, [ pans, activePan ]);
+  const getNewPolygon = () => new window.google.maps.Polygon({ ..._POLYGON_DATA_, fillColor: colorPan, strokeColor: colorPan, editable: true });
+
+  const [ polygons, setPolygons ] = useState([
+    getNewPolygon()
+  ]);
+
+  useEffect(() => {
+    const colors = pans.map(p => p.color);
+    if (colors.length < polygons.length) {
+      console.log("Filtering based on colors : ", colors);
+      setPolygons(pols => pols.filter(p => {
+        console.log(">> fillColor : ", p.fillColor);
+        const isIncluded = colors.includes(p.fillColor);
+        if (!isIncluded)
+          p.setMap(null);
+        return isIncluded;
+      }));
+    }
+    else if (colors.length > polygons.length)
+      console.log("pan being added should be handled in activePan useEffect already");
+  }, [ pans ])
+
+  const polygon = useMemo(() => {
+    for (const p of polygons)
+      p.setEditable(false);
+    if (activePan < polygons.length) {
+      polygons[activePan].setEditable(true);
+      return polygons[activePan];
+    }
+    else {
+      const newPolygon = getNewPolygon();
+      setPolygons([ ...polygons, newPolygon ]);
+      return newPolygon;
+    }
+  }, [activePan]);
+
+
+  console.log("Rendering Map : ", { center, activePan, colorPan, polygons, polygon });
+
 
   /* 1st, (re)load map when center changes, zoom out if no search otherwise zoomed in */
   useEffect(() => {
@@ -36,15 +78,22 @@ const Map = ({ center, colorMarkers, setSurface }) => {
       // The map, centered from props
       setMap(mapIni);
       setMarkers([]);
-      polygon.setMap(mapIni);
+      if (polygon)
+        polygon.setMap(mapIni);
     }
     loadGoogleMaps();
   }, [ center ]);
 
-  window.google.maps.event.addListener(polygon.getPaths(), 'set_at', function(){
-    // Point was created
-    recalculateSurface();
-  });
+  useEffect(() => {
+    if (!polygon || typeof polygon.setMap !== 'function')
+      return ;
+    polygon.setMap(map);
+    window.google.maps.event.addListener(polygon.getPaths(), 'set_at', function(){
+      // Point was created
+      recalculateSurface();
+    });
+
+  }, [ polygon ])
 
   /* handler function on click to put the marker */
   const handleClickPoints = useCallback((e) => setMarkers(markersIni => {
@@ -83,7 +132,7 @@ const Map = ({ center, colorMarkers, setSurface }) => {
     // //   console.log("Looping over marker[", index ,"] position=", markerCoordinates(marker))
     // // );
     // // const pinWithColor = new window.google.maps.marker.PinView({
-    // //   background: colorMarkers,
+    // //   background: colorPan,
     // // });
 
 
@@ -109,7 +158,7 @@ const Map = ({ center, colorMarkers, setSurface }) => {
     //   oldMarker.setMap(null);
     //   return tempArray;
     // }
-  }), [ map ])
+  }), [ map, polygon ])
 
   // useEffect(() => { 
   //   // Update polygon path
@@ -136,7 +185,8 @@ const Map = ({ center, colorMarkers, setSurface }) => {
       // content: centerMarker.elementm
     });
     // setMarkers([ marker ]);
-    map.addListener("click", handleClickPoints);
+    const listenerHandle = map.addListener("click", handleClickPoints);
+    return () => window.google.maps.event.removeListener(listenerHandle);
   }, [ center, map, handleClickPoints ])
 
   /* on points change, draw the markers, and calc surface if needed*/ 

@@ -19,7 +19,7 @@ import Form from './Form';
 import Map from './Map';
 
 import { _MAP_CENTER_FR_ } from './config';
-const _COLORS_ = [ green, blue, red, orange ];
+const _COLORS_ = [ green[500], blue[500], red[500], orange[500] ];
 
 
 function Home() {
@@ -31,11 +31,14 @@ function Home() {
   const [ activePan, setActivePan ] = useState(0);
 
   const addPan = () => {
-    setPans([ ...pans, { color: _COLORS_.find(c => !pans.some(p => p.color === c)), surface: 0 } ]);
+    setPans([ ...pans, { color: _COLORS_.find(c => !pans.some(p => p?.color === c)), surface: 0 } ]);
+    setActivePan(pans.length - 1);
   };
 
   const deletePan = index => {
     setPans(p => p.filter((item, i) => i !== index));
+    if (activePan === index)
+      setActivePan(0);
   }
 
   const submitAddress = location => {
@@ -65,7 +68,7 @@ function Home() {
                 <Paper style={{ background: '#f2f2f2', padding: '1.5em', margin: '1em 0'}} elevation={activePan === index ? 12 : 2} onClick={() => setActivePan(index)}>
                   <Typography variant='h6' style={{ display: 'flex', justifyContent: 'space-between'}} component='div'>
                     <div style={{ display: 'flex' }}>
-                      <div style={{ backgroundColor: pan.color[500], width: 30, height: 30 }}>{' '}</div>
+                      <div style={{ backgroundColor: pan?.color, width: 30, height: 30 }}>{' '}</div>
                       Pan { index + 1}
                     </div>
                     <div style={{ display: 'flex' }}>
@@ -121,7 +124,8 @@ function Home() {
                 : pan
               )
             )}
-            colorPan={pans[activePan].color}
+            activePan={activePan}
+            pans={pans}
           />
         </Paper>
       </div>
