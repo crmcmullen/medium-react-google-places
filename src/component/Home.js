@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+
 import {
   Typography,
   Paper,
@@ -15,7 +17,7 @@ import { green, blue, red, orange } from '@mui/material/colors';
 
 import "./home.scss";
 
-import Form from './Form';
+import AddressForm from './AddressForm';
 import Map from './Map';
 
 import { _MAP_CENTER_FR_ } from './config';
@@ -24,6 +26,10 @@ const _COLORS_ = [ green[500], blue[500], red[500], orange[500] ];
 
 function Home() {
   const [ activeStep, setActiveStep ] = useState(0);
+
+  const addressForm = useForm({});
+
+
   const [ center, setCenter ] = useState(_MAP_CENTER_FR_);
   const [ pans, setPans ] = useState([
     { color: _COLORS_[0], surface: 0 },
@@ -58,7 +64,7 @@ function Home() {
             <Step>
               <StepLabel onClick={() => setActiveStep(0)}>Renseigner l'adresse</StepLabel>
               <StepContent>
-                <Form centerMap={submitAddress} />        
+                <AddressForm { ...addressForm } centerMap={submitAddress} />        
               </StepContent>
             </Step>
             <Step>

@@ -1,16 +1,15 @@
 import React, { useEffect, useRef } from "react";
-import { useForm } from "react-hook-form";
 import "./home.scss";
 
 import useGooglePlaceAutoComplete from "../service/googlePlaceAutocomplete";
 
-function Form({ centerMap }) {
+// all args besides centerMap are spread from react-hook-form's useForm
+const AddressForm = ({ handleSubmit, register, setFocus, setValue, formState = {}, centerMap }) => {
 
   const address1Ref = useRef();
   const googleAutoCompleteSvc = useGooglePlaceAutoComplete();
   let autoComplete = "";
 
-  const { handleSubmit, register, setFocus, setValue, formState = {} } = useForm({});
   const { errors } = formState;
 
   const handleAddressSelect = async () => {
@@ -109,4 +108,4 @@ function Form({ centerMap }) {
   );
 }
 
-export default Form;
+export default AddressForm;
