@@ -24,8 +24,12 @@ const Map = ({ center, activePan = 0, pans = [], setSurface }) => {
   const [ map, setMap ] = useState();
   const [ markers, setMarkers ] = useState([]);
   
-  const colorPan = useMemo(() => pans[activePan].color, [ pans, activePan ]);
-  const getNewPolygon = () => new window.google.maps.Polygon({ ..._POLYGON_DATA_, fillColor: colorPan, strokeColor: colorPan, editable: true });
+  const colorPan = useMemo(() => pans[activePan]?.color, [ pans, activePan ]);
+  const getNewPolygon = () => new window.google.maps.Polygon({
+    ..._POLYGON_DATA_,
+    fillColor: colorPan, strokeColor: colorPan,
+    editable: true,
+  });
 
   const [ polygons, setPolygons ] = useState([
     getNewPolygon()
@@ -34,14 +38,18 @@ const Map = ({ center, activePan = 0, pans = [], setSurface }) => {
   useEffect(() => {
     const colors = pans.map(p => p.color);
     if (colors.length < polygons.length) {
-      console.log("Filtering based on colors : ", colors);
+      console.log("Filtering based on colors ! polygons before=", polygons.length, " and color : ", colors);
       setPolygons(pols => pols.filter(p => {
         console.log(">> fillColor : ", p.fillColor);
         const isIncluded = colors.includes(p.fillColor);
-        if (!isIncluded)
+        if (!isIncluded) {
+          console.log(">> setting map to null for p=", p);
+          // p.remove();
           p.setMap(null);
+        }
         return isIncluded;
       }));
+      console.log(">> polygons after filter=", polygons.length);
     }
     else if (colors.length > polygons.length)
       console.log("pan being added should be handled in activePan useEffect already");
