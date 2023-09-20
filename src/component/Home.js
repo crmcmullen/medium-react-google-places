@@ -26,36 +26,65 @@ function Home() {
 
   const addressForm = useForm({});
 
-
   const [ center, setCenter ] = useState(_MAP_CENTER_FR_);
-  const [ pans, setPans ] = useState([
-    { nb: 1, color: _COLORS_[0], surface: 0 },
-  ]);
-  const [ activePan, setActivePan ] = useState(0);
 
-  const addPan = () => {
-    setPans([
-      ...pans,
-      {
-        color: _COLORS_.find(c => !pans.some(p => p?.color === c)),
-        surface: 0,
-        nb: pans.length + 1,
-      }
-    ]);
-    setActivePan(pans.length - 1);
+  const [ panelsState, setPanelsState ] = useState({
+    pans: [
+     { nb: 1, color: _COLORS_[0], surface: 0 },
+    ],
+    activePan: 0
+  });
+  const {
+    pans = [],
+    activePan = 0,
+  } = panelsState;
+
+  const setActivePan = index => evt => {
+    evt.preventDefault();
+    evt.stopPropagation();
+    setPanelsState(s => ({ ...s, activePan: index }) );
+  }
+
+  const addPan = evt => {
+    evt.preventDefault();
+    evt.stopPropagation();
+    console.log("In addPan !");
+    setPanelsState(s => {
+      const newPans = {
+        pans: [
+          ...s.pans,
+          {
+            color: _COLORS_.find(c => !s.pans.some(p => p?.color === c)),
+            surface: 0,
+            nb: s.pans.length + 1,
+          }
+        ],
+        activePan: s.pans.length, // since new index is old size
+      };
+      console.log(">> newPans : ", newPans);
+      return newPans;
+    });
   };
 
-  const deletePan = index => {
-    setPans(p => p.filter((item, i) => i !== index));
-    if (activePan === index)
-      setActivePan(0);
-  };
+  const deletePan = index => evt => {
+    evt.preventDefault();
+    evt.stopPropagation();
+    setPanelsState(s => ({
+      pans: [ ...s.pans ].filter((item, i) => i !== index),
+      activePan: (
+        s.activePan === index // if we delete the selected, back to start
+        ? 0
+        : (index < s.activePan ? activePan - 1 : activePan) // if the deleted one is before the displayed, would get wrong order or > total
+      ),
+    }) );
+  }
 
   const submitAddress = location => {
     setCenter(location);
     setActiveStep(1);
   };
 
+  console.log("Rendering Home : ", { pans, activePan, center });
 
   return (
     <div className="container">
@@ -68,7 +97,7 @@ function Home() {
             <Step>
               <StepLabel onClick={() => setActiveStep(0)}>Renseigner l'adresse</StepLabel>
               <StepContent>
-                <AddressForm { ...addressForm } centerMap={submitAddress} />        
+                <AddressForm { ...addressForm } centerMap={submitAddress} />
               </StepContent>
             </Step>
             <Step>
@@ -80,8 +109,8 @@ function Home() {
                   pan={pan}
                   addPan={addPan}
                   isActive={activePan === index}
-                  setActivePan={() => setActivePan(index)}
-                  deletePan={() => deletePan(index)}
+                  setActivePan={setActivePan(index)}
+                  deletePan={deletePan(index)}
                   nbPans={pans.length}
                 />
               ) }
@@ -116,15 +145,19 @@ function Home() {
         <Paper>
           <Map
             center={center}
-            setSurface={surface => setPans(ps =>
-              ps.map((pan, index) => 
-                index === activePan
-                ? ({ ...pan, surface })
-                : pan
-              )
-            )}
-            activePan={activePan}
-            pans={pans}
+            setSurface={surface =>
+              setPanelsState({
+                ...panelsState,
+                pans: pans.map((pan, index) => 
+                  index === activePan
+                  ? ({ ...pan, surface })
+                  : pan
+                )
+              })
+            }
+            { ...panelsState }
+            // activePan={activePan}
+            // pans={pans}
           />
         </Paper>
       </div>
