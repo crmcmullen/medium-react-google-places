@@ -34,7 +34,9 @@ const Map = ({ center, activePan = 0, pans = [], setSurface }) => {
   const [ polygons, setPolygons ] = useState([
     getNewPolygon()
   ]);
-
+  const [rectanglesDrawn, setRectanglesDrawn ] = useState([
+  ]);
+  
   useEffect(() => {
     const colors = pans.map(p => p.color);
     if (colors.length < polygons.length) {
@@ -102,6 +104,40 @@ const Map = ({ center, activePan = 0, pans = [], setSurface }) => {
     });
 
   }, [ polygon ])
+
+  useEffect(() => {
+    setRectanglesDrawn(rectangles => {
+      rectangles.forEach(rectangle => rectangle.setMap(null))
+      return [];
+    })
+    if (pans[activePan].rectangles?.length > 3)
+      for (let rectanglePan of pans[activePan].rectangles) {
+        console.log('Rectangle', rectanglePan)
+        setRectanglesDrawn(rectangles => {
+          const newPolygonRectangle = new window.google.maps.Polygon({
+            strokeColor: "#FF0000",
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: "#FF0000",
+            fillOpacity: 0.35,
+            map,
+            paths: rectanglePan
+          });
+          window.google.maps.event.addListener(newPolygonRectangle, 'click', function (event) {
+            if(this.fillColor !== '#FFFFFF')
+              return this.setOptions({
+                strokeWeight: 2.0, fillColor: '#FFFFFF', strokeColor: '#FFFFFF' });
+            return this.setOptions({
+              strokeWeight: 2.0, fillColor: '#FF0000', strokeColor: '#FF0000'
+            });
+          });
+          return [...rectangles, newPolygonRectangle]
+        })
+      }
+    // return rectangles.forEach(rectangle => rectangle.setMap(null))
+  }, [activePan, pans[activePan].rectangles, setRectanglesDrawn])
+
+
 
   /* handler function on click to put the marker */
   const handleClickPoints = useCallback((e) => setMarkers(markersIni => {
@@ -205,7 +241,7 @@ const Map = ({ center, activePan = 0, pans = [], setSurface }) => {
     if (path.length > 2) {
       const surface = window.google.maps.geometry?.spherical?.computeArea(path.map(p => ({lat: p.lat(), lng: p.lng()}))/* .map(m => markerCoordinates(m)) */);
       // alert('Surface found : ' + surface);
-      setSurface(surface);
+      setSurface({surface, path});
     }
   }
 
